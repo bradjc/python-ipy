@@ -155,9 +155,6 @@ class IPint:
         # Do we want prefix printed by default? see _printPrefix()
         self.WantPrefixLen = None
 
-        # Does this look like an IPv4 address in IPv6 format?
-        self.ipv4tov6 = False
-
         netbits = 0
         prefixlen = -1
 
@@ -236,12 +233,7 @@ class IPint:
 
             if ipversion == 6 and parsedVersion == 4:
                 # add in the ones to make a proper ipv4->ipv6 address
-                self.ip       += 0xffff000000000000
-                self.ipv4tov6 = True
-            elif ipversion == 6:
-                newip = self.ip - 0xffff000000000000
-                if newip <= 0xffffffff:
-                    self.ipv4tov6 = True
+                self.ip       += 0xffff00000000
 
             if prefixlen == -1:
                 if ipversion == 4:
@@ -382,7 +374,7 @@ class IPint:
         if self._ipversion == 4:
             return self.strFullsize(wantprefixlen)
         else:
-            if self.ip >> 32 == 0xffff0000:
+            if self.ip >> 32 == 0xffff:
                 ipv4 = intToIp(self.ip & 0xffffffff, 4)
                 text = "::ffff:" + ipv4 + self._printPrefix(wantprefixlen)
                 return text
